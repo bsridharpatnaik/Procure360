@@ -1,4 +1,4 @@
-package com.gb.p360.data;
+package com.gb.p360.exception;
 
 import java.time.Instant;
 
