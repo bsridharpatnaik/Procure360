@@ -36,12 +36,12 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + id));
 
         // Don't update username or password since those are handled by your security implementation
-        user.setRole(Role.valueOf(userDTO.getRole()));
+        user.setRole(Role.valueOf(userDTO.getRole().name()));
 
-        if (userDTO.getFactoryIds() != null) {
-            Set<Factory> factories = userDTO.getFactoryIds().stream()
-                    .map(factoryId -> factoryRepository.findById(factoryId)
-                            .orElseThrow(() -> new ResourceNotFoundException("Factory not found with id: " + factoryId)))
+        if (userDTO.getFactories() != null) {
+            Set<Factory> factories = userDTO.getFactories().stream()
+                    .map(factoryDTO -> factoryRepository.findById(factoryDTO.getId())
+                            .orElseThrow(() -> new ResourceNotFoundException("Factory not found with id: " + factoryDTO.getId())))
                     .collect(Collectors.toSet());
             user.setFactories(factories);
         }

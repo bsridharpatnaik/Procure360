@@ -1,15 +1,15 @@
 package com.gb.p360.models;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.*;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Audited
 @NoArgsConstructor
@@ -23,6 +23,7 @@ public class LineItem {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "procurement_request_id", nullable = false)
+    @JsonIgnoreProperties({"lineItems", "factory", "createdBy", "owner"})
     private ProcurementRequest procurementRequest;
 
     @ManyToOne(fetch = FetchType.EAGER)

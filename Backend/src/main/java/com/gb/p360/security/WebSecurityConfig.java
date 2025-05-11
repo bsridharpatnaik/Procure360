@@ -5,6 +5,7 @@ import com.gb.p360.security.jwt.AuthEntryPointJwt;
 import com.gb.p360.security.jwt.AuthTokenFilter;
 import com.gb.p360.security.services.UserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -34,6 +35,9 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Autowired
     private AuthEntryPointJwt unauthorizedHandler;
+
+    @Value("${spring.profiles.active}")
+    private String activeProfiles;
 
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
@@ -77,8 +81,23 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers("/api/auth/login").permitAll()
-                .antMatchers("/user/status").permitAll()
-                .antMatchers("/swagger-ui/index.html").permitAll()
+                .antMatchers("/user/status").permitAll();
+
+        // Only allow Swagger access when profile doesn't contain "prod"
+        if (!activeProfiles.toLowerCase().contains("prod")) {
+            http.authorizeRequests()
+                    .antMatchers("/swagger-ui/**").permitAll()
+                    .antMatchers("/swagger-ui.html").permitAll()
+                    .antMatchers("/v3/api-docs/**").permitAll()
+                    .antMatchers("/v3/api-docs.yaml").permitAll()
+                    .antMatchers("/swagger-resources/**").permitAll()
+                    .antMatchers("/swagger-resources").permitAll()
+                    .antMatchers("/webjars/**").permitAll()
+                    .antMatchers("/v2/api-docs").permitAll()
+                    .antMatchers("/configuration/ui").permitAll()
+                    .antMatchers("/configuration/security").permitAll();
+        }
+        http.authorizeRequests()
                 .anyRequest().authenticated();
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }
@@ -90,7 +109,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         configuration.setAllowedMethods(Arrays.asList("GET", "PATCH", "POST", "PUT", "DELETE", "OPTIONS")); // Allow specific HTTP methods
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type")); // Allow specific headers
         configuration.setAllowCredentials(true); // Allow credentials
-
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;

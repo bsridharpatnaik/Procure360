@@ -5,9 +5,9 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import lombok.*;
 import org.hibernate.envers.Audited;
 
 import java.time.LocalDateTime;
@@ -16,7 +16,8 @@ import java.util.Set;
 
 @Entity
 @Table(name = "users")
-@Data
+@Getter
+@Setter
 @Audited
 @NoArgsConstructor
 @AllArgsConstructor
@@ -38,7 +39,9 @@ public class User {
   @Column(nullable = false)
   private Role role;
 
-  @ManyToMany(fetch = FetchType.EAGER)
+  @ManyToMany(fetch = FetchType.LAZY)
+  @JsonIgnoreProperties({"users", "procurementRequests", "lineItems"})
+  @JsonBackReference("factory-users")
   @JoinTable(
           name = "user_factory",
           joinColumns = @JoinColumn(name = "user_id"),
@@ -46,12 +49,12 @@ public class User {
   )
   private Set<Factory> factories = new HashSet<>();
 
-  @OneToMany(mappedBy = "createdBy")
-  @JsonIgnore
+  @OneToMany(mappedBy = "createdBy", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @JsonIgnoreProperties({"createdBy", "owner", "factory", "lineItems"})
   private Set<ProcurementRequest> createdRequests = new HashSet<>();
 
-  @OneToMany(mappedBy = "owner")
-  @JsonIgnore
+  @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+  @JsonIgnoreProperties({"createdBy", "owner", "factory", "lineItems"})
   private Set<ProcurementRequest> ownedRequests = new HashSet<>();
 
   @Column(name = "created_at", nullable = false, updatable = false)

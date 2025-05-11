@@ -1,8 +1,7 @@
 package com.gb.p360.models;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import lombok.*;
 import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
@@ -10,7 +9,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Audited
 @NoArgsConstructor
@@ -26,9 +26,11 @@ public class Vendor {
     private String name;
 
     @OneToMany(mappedBy = "vendor")
+    @JsonIgnoreProperties({"vendor", "procurementRequest", "material"})
     private List<LineItem> lineItems = new ArrayList<>();
 
     @OneToMany(mappedBy = "vendor")
+    @JsonIgnoreProperties({"vendor", "material"})
     private List<PriceHistory> priceHistories = new ArrayList<>();
 
     @Column(name = "created_at", nullable = false, updatable = false)
