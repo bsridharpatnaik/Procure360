@@ -2,6 +2,7 @@ package com.gb.p360.service;
 
 import java.util.List;
 
+import com.gb.p360.config.FactoryMapper;
 import com.gb.p360.data.FactoryDTO;
 import com.gb.p360.exception.ResourceNotFoundException;
 import com.gb.p360.models.Factory;
@@ -16,10 +17,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class FactoryServiceImpl implements FactoryService {
 
     private final FactoryRepository factoryRepository;
+    private final FactoryMapper factoryMapper;
 
     @Autowired
-    public FactoryServiceImpl(FactoryRepository factoryRepository) {
+    public FactoryServiceImpl(FactoryRepository factoryRepository, FactoryMapper factoryMapper) {
         this.factoryRepository = factoryRepository;
+        this.factoryMapper = factoryMapper;
     }
 
     @Override
@@ -59,8 +62,8 @@ public class FactoryServiceImpl implements FactoryService {
     }
 
     @Override
-    public List<Factory> getAllFactories() {
-        return factoryRepository.findAll();
+    public List<FactoryDTO> getAllFactories() {
+        return factoryMapper.toDTOList(factoryRepository.findAll());
     }
 
     @Override

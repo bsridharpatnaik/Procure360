@@ -16,7 +16,7 @@ public interface FactoryService {
 
     Factory getFactoryByCode(String code);
 
-    List<Factory> getAllFactories();
+    List<FactoryDTO> getAllFactories();
 
     void deleteFactory(Long id);
 }

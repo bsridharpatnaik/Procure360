@@ -1,5 +1,6 @@
 package com.gb.p360.controllers;
 
+import com.gb.p360.config.FactoryMapper;
 import com.gb.p360.data.FactoryDTO;
 import com.gb.p360.models.Factory;
 import com.gb.p360.service.interfaces.FactoryService;
@@ -18,10 +19,12 @@ import java.util.List;
 public class FactoryController {
 
     private final FactoryService factoryService;
+    private final FactoryMapper factoryMapper;
 
     @Autowired
-    public FactoryController(FactoryService factoryService) {
+    public FactoryController(FactoryService factoryService, FactoryMapper factoryMapper) {
         this.factoryService = factoryService;
+        this.factoryMapper = factoryMapper;
     }
 
     @PostMapping
@@ -47,23 +50,23 @@ public class FactoryController {
 
     @GetMapping
     @Operation(summary = "Get all factories", description = "Returns a list of all factories in the system")
-    public ResponseEntity<List<Factory>> getAllFactories() {
-        List<Factory> factories = factoryService.getAllFactories();
+    public ResponseEntity<List<FactoryDTO>> getAllFactories() {
+        List<FactoryDTO> factories = factoryService.getAllFactories();
         return ResponseEntity.ok(factories);
     }
 
     @GetMapping("/name/{name}")
     @Operation(summary = "Get factory by name", description = "Returns a factory based on the name provided")
-    public ResponseEntity<Factory> getFactoryByName(@PathVariable String name) {
+    public ResponseEntity<FactoryDTO> getFactoryByName(@PathVariable String name) {
         Factory factory = factoryService.getFactoryByName(name);
-        return ResponseEntity.ok(factory);
+        return ResponseEntity.ok(factoryMapper.toDTO(factory));
     }
 
     @GetMapping("/code/{code}")
     @Operation(summary = "Get factory by code", description = "Returns a factory based on the code provided")
-    public ResponseEntity<Factory> getFactoryByCode(@PathVariable String code) {
+    public ResponseEntity<FactoryDTO> getFactoryByCode(@PathVariable String code) {
         Factory factory = factoryService.getFactoryByCode(code);
-        return ResponseEntity.ok(factory);
+        return ResponseEntity.ok(factoryMapper.toDTO(factory));
     }
 
     @DeleteMapping("/{id}")
